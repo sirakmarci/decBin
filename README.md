@@ -1,2 +1,0 @@
-# DEC-BIN
-Számrendszerátváltó program.
