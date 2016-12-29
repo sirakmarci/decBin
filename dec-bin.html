@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<!--
+Created using JS Bin
+http://jsbin.com
+
+Copyright (c) 2016 by sirakmarci (http://jsbin.com/pecudaq/9/edit)
+
+Released under the MIT license: http://jsbin.mit-license.org
+-->
+<meta name="robots" content="noindex">
+<html>
+<head>
+  <script src="https://code.jquery.com/jquery.min.js"></script>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/css/bootstrap-select.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/js/bootstrap-select.min.js"></script>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>DEC-BIN</title>
+</head>
+
+<body>
+  <div class="container">
+    <div class="jumbotron">
+      <h1  class="">DEC-BIN</h1>
+      <p>Számrendszerátváltó</p>
+    </div>
+    
+    <div class="alert alert-info">
+      <p>Az átváltó maximum 16 számjegyű, pozitív számokat tud átváltani.</p>
+    </div>
+    
+    <div>
+      <h3>Válassz kiindulási számrendszert:      </h3>
+      <select id="num-sys-in-box" class="selectpicker">
+        <option value="10">10</option>
+        <option value="2">2</option>
+	      <option value="3">3</option>
+    	  <option value="4">4</option>
+        <option value="5">5</option>
+    	  <option value="6">6</option>
+  	    <option value="7">7</option>
+      	<option value="8">8</option>
+	      <option value="9">9</option>
+      </select>
+    </div>
+    
+    <div>  
+      <h3>Válassz célszámrendszert:      </h3>
+      <select id="num-sys-out-box" class="selectpicker">
+        <option value="10">10</option>
+        <option value="2">2</option>
+	      <option value="3">3</option>
+    	  <option value="4">4</option>
+	      <option value="5">5</option>
+      	<option value="6">6</option>
+	      <option value="7">7</option>
+      	<option value="8">8</option>
+	      <option value="9">9</option>
+      </select>
+    </div>
+
+    <p></p>
+    
+      <input id="num-in-box" type=text class="form-control" placeholder="Írd be az átváltandó számot">
+    
+    <p></p>
+    
+      <button class="btn btn-success btn-lg" onclick="theWholeThing()" tabindex="-1">Átváltás</button>
+    
+    <p></p>
+    
+    <input id="num-out-box" type="text" class="form-control" readonly="true" tabindex="-1">
+    
+    <p></p>
+    
+    <div id="alerts"></div>
+  </div>
+<script id="jsbin-javascript">
+function addAlert(message) {
+    $('#alerts').append(
+        '<div class="alert alert-danger fade in">' +
+            '<button type="button" class="close" data-dismiss="alert">' +
+            '&times;</button>' + message + '</div>');
+}
+
+function theWholeThing()
+{
+	document.getElementById('num-out-box').value = '';
+
+	var numSysIn = document.getElementById('num-sys-in-box').value;
+	var numSysOut = document.getElementById('num-sys-out-box').value;
+	var numIn = document.getElementById('num-in-box').value;
+	var numArray = []	// Maga a szám felbontva.
+	var valueArray = []	//A szám átalakítva és felbontva.
+
+	document.getElementById("num-in-box").value = '';
+
+	if (numIn > 0 && numIn < 10000000000000000)
+	{
+		if (numSysIn == numSysOut)
+		{
+			var numArrayCount = 0;
+			while (numIn>0)
+			{
+				numArray[numArrayCount] = numIn % 10;
+				numIn = (numIn - numIn % 10) / 10;
+				numArrayCount++;
+			}
+
+			var error1 = 0;
+			var error1Count = numArrayCount;
+			for (; error1Count >= 0; error1Count--)
+			{
+				if (numArray[error1Count] > numSysIn - 1)
+				{
+					error1 = 1;
+				}
+			}
+
+			if (error1 == 0)
+			{
+				numArray.reverse();
+				document.getElementById('num-out-box').value = numArray.join('');
+			}
+
+			else
+			{
+				addAlert('<strong>ERROR 1: </strong>A beírt szám nem felel meg a számrendszernek.');
+			}
+		}
+
+		if (numSysIn != 10 && numSysOut == 10)
+		{
+			var numArrayCount = 0;
+			while (numIn > 0)
+			{
+				numArray[numArrayCount] = numIn % 10;
+				numIn = (numIn - numIn %10) / 10;
+				numArrayCount++;
+			}
+
+			var error1 = 0;
+			var error1Count = numArrayCount;
+			for (; error1Count >= 0; error1Count--)
+			{
+				if (numArray[error1Count] > numSysIn - 1)
+				{
+					error1 = 1;
+				}
+			}
+
+			if (error1 == 0)
+			{
+				var valueDec = 0;
+				for (var valueDecCount = 0; valueDecCount < numArrayCount; valueDecCount++)
+				{
+					valueDec = valueDec + numArray[valueDecCount]*Math.pow(numSysIn, valueDecCount);
+				}
+			document.getElementById('num-out-box').value = valueDec;
+			}
+
+			else
+			{
+				addAlert('<strong>ERROR 1: </strong>A beírt szám nem felel meg a számrendszernek.');
+			}
+		}
+
+		if (numSysIn == 10 && numSysOut != 10)
+		{
+			var valueArrayCount = 0;
+			while (numIn > 0)
+			{
+				valueArray[valueArrayCount] = numIn % numSysOut;
+				numIn = (numIn - numIn % numSysOut) / numSysOut;
+				valueArrayCount++;
+			}
+
+			valueArray.reverse();
+			document.getElementById('num-out-box').value = valueArray.join('');
+		}
+
+		if (numSysIn != 10 && numSysOut != 10 && numSysIn != numSysOut)
+		{
+			var numArrayCount = 0;
+			while (numIn > 0)
+			{
+				numArray[numArrayCount] = numIn % 10;
+				numIn = (numIn - numIn %10) / 10;
+				numArrayCount++;
+			}
+
+			var error1 = 0;
+			var error1Count = numArrayCount;
+			for (; error1Count >= 0; error1Count--)
+			{
+				if (numArray[error1Count] > numSysIn - 1)
+				{
+					error1 = 1;
+				}
+			}
+
+			if (error1 == 0)
+			{
+				var valueDec = 0;
+				for (var valueDecCount = 0; valueDecCount < numArrayCount; valueDecCount++)
+				{
+					valueDec = valueDec + numArray[valueDecCount]*Math.pow(numSysIn, valueDecCount);
+				}
+
+				var valueArrayCount = 0;
+				while (valueDec > 0)
+				{
+					valueArray[valueArrayCount] = valueDec % numSysOut;
+					valueDec = (valueDec - valueDec % numSysOut) / numSysOut;
+					valueArrayCount++;
+				}
+
+				valueArray.reverse();
+				document.getElementById('num-out-box').value = valueArray.join('');
+			}
+
+			else
+			{
+				addAlert('<strong>ERROR 1: </strong>A beírt szám nem felel meg a számrendszernek.');
+			}
+		}
+	}
+
+	if (numIn >= 10000000000000000)
+	{
+		addAlert('<strong>ERROR 2: </strong>A beírt szám túl nagy.');
+	}
+
+	if(numIn < 0)
+	{
+		addAlert('<strong>ERROR 3: </strong>A beírt szám túl kicsi.');
+	}
+
+	document.getElementById('num-in-box').focus();
+}
+</script>
+</body>
+</html>
